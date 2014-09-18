@@ -12,12 +12,12 @@ namespace Orient.Client.Protocol.Serializers
     {
         internal static string Serialize(ODocument document)
         {
-            if (!document.HasField("@ClassName"))
+            if (!document.HasField("@OClassName"))
             {
                 throw new OException(OExceptionType.Serialization, "Document doesn't contain @ClassName field which is required for serialization.");
             }
 
-            return document.GetField<string>("@ClassName") + "@" + SerializeDocument(document);
+            return document.GetField<string>("@OClassName") + "@" + SerializeDocument(document);
         }
 
         #region Deserialize

@@ -13,6 +13,7 @@ namespace Orient.Client
     {
         private SqlQuery _sqlQuery = new SqlQuery();
         private Connection _connection;
+        private ODocument _document;
 
         public OSqlCreateVertex()
         {
@@ -34,24 +35,24 @@ namespace Orient.Client
 
         public OSqlCreateVertex Vertex<T>(T obj)
         {
-            ODocument document;
+            
 
             if (obj is ODocument)
             {
-                document = obj as ODocument;
+                _document = obj as ODocument;
             }
             else
             {
-                document = ODocument.ToDocument(obj);
+                _document = ODocument.ToDocument(obj);
             }
 
-            if (string.IsNullOrEmpty(document.OClassName))
+            if (string.IsNullOrEmpty(_document.OClassName))
             {
                 throw new OException(OExceptionType.Query, "Document doesn't contain OClassName value.");
             }
 
-            _sqlQuery.Vertex(document.OClassName);
-            _sqlQuery.Set(document);
+            //_sqlQuery.Vertex(_document.OClassName);
+            //_sqlQuery.Set(_document);
 
             return this;
         }
@@ -101,17 +102,19 @@ namespace Orient.Client
 
         public OVertex Run()
         {
-            CommandPayload payload = new CommandPayload();
-            payload.Type = CommandPayloadType.Sql;
-            payload.Text = ToString();
-            payload.NonTextLimit = -1;
-            payload.FetchPlan = "";
-            payload.SerializedParams = new byte[] { 0 };
+            //CommandPayload payload = new CommandPayload();
+            //payload.Type = CommandPayloadType.Sql;
+            //payload.Text = ToString();
+            //payload.NonTextLimit = -1;
+            //payload.FetchPlan = "";
+            //payload.SerializedParams = new byte[] { 0 };
 
-            Command operation = new Command();
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.ClassType = CommandClassType.NonIdempotent;
-            operation.CommandPayload = payload;
+            //Command operation = new Command();
+            //operation.OperationMode = OperationMode.Synchronous;
+            //operation.ClassType = CommandClassType.NonIdempotent;
+            //operation.CommandPayload = payload;
+
+            CreateRecord operation = new CreateRecord(_document);
 
             OCommandResult result = new OCommandResult(_connection.ExecuteOperation(operation));
 
