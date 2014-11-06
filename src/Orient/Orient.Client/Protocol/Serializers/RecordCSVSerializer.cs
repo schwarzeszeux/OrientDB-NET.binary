@@ -5,13 +5,16 @@ using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Orient.Client.Protocol.Operations;
 
 namespace Orient.Client.Protocol.Serializers
 {
     internal class RecordCSVSerializer : IRecordSerializer
     {
-        public RecordCSVSerializer()
+        private Connection _connection;
+        public RecordCSVSerializer(Connection connection)
         {
+            _connection = connection;
         }
 
         public byte[] Serialize(ODocument document)
@@ -158,21 +161,42 @@ namespace Orient.Client.Protocol.Serializers
 
             if ((valueType.IsArray) || (valueType.IsGenericType))
             {
-                bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
-
-                IEnumerable collection = (IEnumerable)value;
-
-                bool first = true;
-                foreach (object val in collection)
+                if (valueType.Name == "Dictionary`2")
                 {
-                    if (!first)
-                        bld.Append(",");
+                    bld.Append("{");
 
-                    first = false;
-                    bld.Append(SerializeValue(val));
+                    IDictionary<string, object> collection = (IDictionary<string, object>)value;
+
+                    bool first = true;
+                    foreach (var keyVal in collection)
+                    {
+                        if (!first)
+                            bld.Append(",");
+
+                        first = false;
+                        bld.Append("\"" + keyVal.Key + "\":" + SerializeValue(keyVal.Value));
+                    }
+
+                    bld.Append("}");
                 }
+                else
+                {
+                    bld.Append(valueType.Name == "HashSet`1" ? "<" : "[");
 
-                bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+                    IEnumerable collection = (IEnumerable)value;
+
+                    bool first = true;
+                    foreach (object val in collection)
+                    {
+                        if (!first)
+                            bld.Append(",");
+
+                        first = false;
+                        bld.Append(SerializeValue(val));
+                    }
+
+                    bld.Append(valueType.Name == "HashSet`1" ? ">" : "]");
+                }
             }
             // if property is ORID type it needs to be serialized as ORID
             else if (valueType.IsClass && (valueType.Name == "ORID"))
@@ -589,7 +613,69 @@ namespace Orient.Client.Protocol.Serializers
                 }
                 else
                 {
-                    throw new NotImplementedException("tree based ridbag");
+                    if (_connection == null || !_connection.IsActive)
+                        throw new OException(OExceptionType.Connection, "Connection is not opened or is null");
+
+                    List<ORID> ridbag = new List<ORID>();
+
+                    // Tree based RidBag - (collectionPointer)(size:int)(changes)
+
+                    // Collection Pointer - (fileId:long)(pageIndex:long)(pageOffset:int)
+                    var fileId = reader.ReadInt64EndianAware();
+                    var pageIndex = reader.ReadInt64EndianAware();
+                    var pageOffset = reader.ReadInt32EndianAware();
+
+                    // size
+                    var size = reader.ReadInt32EndianAware();
+
+                    // Changes - (changesSize:int)[(link:rid)(changeType:byte)(value:int)]*
+                    var changesSize = reader.ReadInt32EndianAware();
+                    for (int j = 0; j < changesSize; j++)
+                    {
+                        throw new NotImplementedException("RidBag Changes not yet implemented");
+                    }
+
+                    var operation = new SBTreeBonsaiFirstKey(null);
+                    operation.FileId = fileId;
+                    operation.PageIndex = pageIndex;
+                    operation.PageOffset = pageOffset;
+
+
+                    // Not realy quiete about this
+                    var connection = OClient.ReleaseConnection(_connection.Alias);
+
+                    var entries = new Dictionary<ORID, int>();
+                    try
+                    {
+                        var orid = connection.ExecuteOperation(operation);
+                        var ft = true;
+                        var key = orid.GetField<ORID>("rid");
+                        do
+                        {
+                            var op = new SBTreeBonsaiGetEntriesMajor(null);
+                            op.FileId = fileId;
+                            op.PageIndex = pageIndex;
+                            op.PageOffset = pageOffset;
+                            op.FirstKey = key;
+                            op.Inclusive = ft;
+
+                            var res = connection.ExecuteOperation(op);
+                            entries = res.GetField<Dictionary<ORID, int>>("entries");
+
+                            rids.AddRange(entries.Keys);
+
+                            if (entries.Count == 0)
+                                break;
+
+                            key = entries.Last().Key;
+                            ft = false;
+
+                        } while (true);
+                    }
+                    finally
+                    {
+                        OClient.ReturnConnection(connection);
+                    }
                 }
             }
 

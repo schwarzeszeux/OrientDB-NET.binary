@@ -24,6 +24,11 @@ namespace Orient.Client
 
         public OTransaction Transaction { get; private set; }
 
+        internal Connection GetConnection()
+        {
+            return _connection;
+        }
+
         public ODatabase(string alias)
         {
             _connection = OClient.ReleaseConnection(alias);
@@ -53,6 +58,17 @@ namespace Orient.Client
                 oCluster = GetClusters().First(x => x.Name == clusterName);
             }
             return oCluster.Id;
+        }
+
+        public string GetClusterNameFor(short clusterId)
+        {
+            OCluster oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
+            if (oCluster == null)
+            {
+                _connection.Reload();
+                oCluster = GetClusters().FirstOrDefault(x => x.Id == clusterId);
+            }
+            return oCluster.Name;
         }
 
         private string CorrectClassName(string className)
@@ -146,7 +162,7 @@ namespace Orient.Client
 
         #endregion
 
-        public List<ODocument> Gremlin(string query)
+        public OCommandResult Gremlin(string query)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "gremlin";
@@ -158,24 +174,18 @@ namespace Orient.Client
 
             ODocument document = _connection.ExecuteOperation(operation);
 
-            return document.GetField<List<ODocument>>("Content");
+            return new OCommandResult(document);
         }
-        
-        public List<ODocument> JavaScript(string query)
+        public OCommandQuery JavaScript(string query)
         {
             CommandPayloadScript payload = new CommandPayloadScript();
             payload.Language = "javascript";
             payload.Text = query;
 
-            Command operation = new Command(_connection.Database);
-            operation.OperationMode = OperationMode.Synchronous;
-            operation.CommandPayload = payload;
+            return new OCommandQuery(_connection, payload);
 
-            ODocument document = _connection.ExecuteOperation(operation);
-
-            return document.GetField<List<ODocument>>("Content");
         }
-        
+
         public OCommandResult Command(string sql)
         {
             CommandPayloadCommand payload = new CommandPayloadCommand();
@@ -189,6 +199,7 @@ namespace Orient.Client
 
             return new OCommandResult(document);
         }
+
 
         public long Size
         {
@@ -234,24 +245,25 @@ namespace Orient.Client
             Close();
         }
 
-        public OClusterCountQuery Clusters(params string[] clusterNames)
+        public OClusterQuery Clusters(params string[] clusterNames)
         {
-            return Clusters(clusterNames.Select(n => GetClusterIdFor(n)));
+            return Clusters(clusterNames.Select(n => new OCluster { Name = n, Id = GetClusterIdFor(n) }));
         }
 
-        private OClusterCountQuery Clusters(IEnumerable<short> clusterIds)
+        private OClusterQuery Clusters(IEnumerable<OCluster> clusters)
         {
-            var query = new OClusterCountQuery(_connection);
-            foreach (var id in clusterIds)
+            var query = new OClusterQuery(_connection);
+            foreach (var id in clusters)
             {
                 query.AddClusterId(id);
             }
             return query;
         }
 
-        public OClusterCountQuery Clusters(params short[] clusterIds)
+        public OClusterQuery Clusters(params short[] clusterIds)
         {
-            return Clusters(clusterIds);
+            //return Clusters(clusterIds.Select(id => new OCluster { Name = GetClusterNameFor(id), Id = id }));
+            return Clusters(clusterIds.Select(id => new OCluster { Id = id }));
         }
     }
 }
