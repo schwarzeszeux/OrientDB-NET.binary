@@ -1,23 +1,43 @@
 {
   "version": "1.0.0-*",
   "description": "Orient.Tests Class Library",
-  "authors": [ "Matt" ],
-  "tags": [ "" ],
+  "authors": [
+    "Matt"
+  ],
+  "tags": [
+    ""
+  ],
   "projectUrl": "",
   "licenseUrl": "",
-
-  "dependencies": {
-    "xunit.runner.aspnet": "2.0.0-aspnet-rc1-15916",
-    "Orient.Client": "1.0.0-*"
-  },
-
-  "frameworks": {
-    "dnx451": { }
-  },
-  "commands": {
-    "test": "xunit.runner.aspnet -parallel none"
-  },
-
+    "dependencies": {
+        "Orient.Client": "1.0.0-*",
+        "System.Linq": "4.0.1-beta-23516",
+        "System.Linq.Parallel": "4.0.1-beta-23516",
+        "System.Linq.Queryable": "4.0.1-beta-23516",
+        "xunit": "2.1.0",
+        "xunit.runner.dnx": "2.1.0-rc1-build204"
+    },
+    "frameworks": {
+        "dnx451": {
+            "frameworkAssemblies": {
+                "system.runtime": "4.0.0.0",
+                "system.reflection": "4.0.0.0",
+                "system.reflection.extensions": "4.0.0.0"
+            }
+        },
+        "dnxcore50": {
+            "dependencies": {
+                "System.Threading.Thread": "4.0.0-beta-23516",
+                "System.Runtime.Extensions": "4.0.10",
+                "System.Runtime": "4.0.20",
+                "System.Reflection": "4.0.10",
+                "System.Reflection.Extensions": "4.0.0"
+            }
+        }
+    },
+    "commands": {
+        "test": "xunit.runner.dnx -parallel none"
+    },
   "compilationOptions": {
     "warningsAsErrors": true
   }

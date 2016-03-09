@@ -77,8 +77,8 @@ namespace Orient.Tests.Issues
                 // Error happen here.
                 Assert.Equal(employee.Childs[0].Id, result.Childs[0].Id);
                 Assert.Equal(employee.Childs[1].Id, result.Childs[1].Id);
-                Assert.Equal(employee.BirthDate[0].ToLongDateString(), result.BirthDate[0].ToLongDateString());
-                Assert.Equal(employee.BirthDate[1].ToLongDateString(), result.BirthDate[1].ToLongDateString());
+                Assert.Equal(employee.BirthDate[0].ToString("D"), result.BirthDate[0].ToString("D"));
+                Assert.Equal(employee.BirthDate[1].ToString("D"), result.BirthDate[1].ToString("D"));
                 Assert.Equal(employee.YearlyIncome[0], result.YearlyIncome[0]);
                 Assert.Equal(employee.YearlyIncome[1], result.YearlyIncome[1]);
                 Assert.Equal(employee.FavoriteColor[0], result.FavoriteColor[0]);

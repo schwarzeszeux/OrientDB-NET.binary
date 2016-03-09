@@ -86,8 +86,16 @@ namespace Orient.Tests
             }
             catch
             {
+#if DNX451
                 state.DestinationSocket.Close();
                 state.SourceSocket.Close();
+#elif DNXCORE50
+                ((IDisposable)state.DestinationSocket).Dispose();
+                ((IDisposable)state.SourceSocket).Dispose();
+#else
+#error No implementation for the target DNX
+#endif
+
             }
         }
 

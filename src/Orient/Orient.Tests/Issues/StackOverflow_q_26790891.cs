@@ -175,9 +175,11 @@ namespace Orient.Tests.Issues
 
                 ODocument record = new ODocument();
                 record.OClassName = model.GetType().Name;
+                //PropertyInfo[] properties = model.GetType().GetProperties(
+                //    BindingFlags.Public | BindingFlags.Instance |
+                //    BindingFlags.SetProperty | BindingFlags.GetProperty);
                 PropertyInfo[] properties = model.GetType().GetProperties(
-                    BindingFlags.Public | BindingFlags.Instance |
-                    BindingFlags.SetProperty | BindingFlags.GetProperty);
+                    BindingFlags.Public | BindingFlags.Instance).Where(p => (p.GetSetMethod() != null) && (p.GetGetMethod() != null)).ToArray();
                 ICollection<PropertyInfo> linkableProperties = new List<PropertyInfo>();
 
                 foreach (PropertyInfo prop in properties)
@@ -265,6 +267,7 @@ namespace Orient.Tests.Issues
                 private IEnumerable<ODocument> documents;
                 private IEnumerable<OEdge> edges;
                 private IDictionary<ORID, ODocument> documentMap;
+                
 
                 private static readonly Func<Type, bool> isModelPropertyEnumerableHelper = pType => typeof(System.Collections.IEnumerable).IsAssignableFrom(pType);
                 private static readonly Func<PropertyInfo, string> isModelPropertyHelper = pInfo =>
@@ -280,7 +283,17 @@ namespace Orient.Tests.Issues
                 };
                 private static readonly Action<dynamic, dynamic, string> setPropertiesHelper = (parent, child, className) =>
                 {
-                    PropertyInfo[] properties = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty | BindingFlags.GetProperty);
+                    //PropertyInfo[] properties = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty | BindingFlags.GetProperty);
+                    PropertyInfo[] properties = parent.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                    List<PropertyInfo> tempProperties = new List<PropertyInfo>();
+                    foreach(var prop in properties)
+                    {
+                        if((prop.GetGetMethod() != null) && (prop.GetSetMethod() != null))
+                        {
+                            tempProperties.Add(prop);
+                        }
+                    }
+                    properties = tempProperties.ToArray();
                     PropertyInfo propertySingle = properties.Where(prop => IsModelProperty(prop, className)).SingleOrDefault();
                     PropertyInfo propertyCollection = properties.Where(prop => IsModelCollectionProperty(prop, className)).SingleOrDefault();
                     if (propertySingle != null)

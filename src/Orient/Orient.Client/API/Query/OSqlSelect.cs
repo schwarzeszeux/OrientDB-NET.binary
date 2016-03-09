@@ -4,6 +4,9 @@ using Orient.Client.Protocol.Operations;
 using Orient.Client.Protocol.Operations.Command;
 using Orient.Client.API.Attributes;
 using System;
+using System.Reflection;
+using System.Runtime;
+using System.Linq;
 
 // syntax:
 // SELECT [FROM <Target> 
@@ -106,14 +109,15 @@ namespace Orient.Client
 
         public OSqlSelect From<T>()
         {
-            var tAttribute = (OAliasAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(OAliasAttribute), true);
-            if (tAttribute == null)
+            var assembly = typeof(T).GetTypeInfo().Assembly;
+            var attribute = assembly.DefinedTypes.Single(x => string.Equals(x.Name, typeof(T).Name, StringComparison.CurrentCultureIgnoreCase)).GetCustomAttribute<OAliasAttribute>();
+            if (attribute == null)
             {
                 return From(typeof(T).Name);
             }
             else
             {
-                return From(tAttribute.Name);
+                return From(attribute.Name);
             }
         }
 
