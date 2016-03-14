@@ -110,7 +110,7 @@ namespace Orient.Client
         public OSqlSelect From<T>()
         {
             var assembly = typeof(T).GetTypeInfo().Assembly;
-            var attribute = assembly.DefinedTypes.Single(x => string.Equals(x.Name, typeof(T).Name, StringComparison.CurrentCultureIgnoreCase)).GetCustomAttribute<OAliasAttribute>();
+            var attribute = assembly.DefinedTypes.Where(x => string.Equals(x.Name, typeof(T).Name, StringComparison.CurrentCultureIgnoreCase)).SelectMany(x => x.GetCustomAttributes<OAliasAttribute>()).SingleOrDefault();
             if (attribute == null)
             {
                 return From(typeof(T).Name);

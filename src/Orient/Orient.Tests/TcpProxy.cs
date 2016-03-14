@@ -46,7 +46,9 @@ namespace Orient.Tests
                             Sockets.Add(destination.MainSocket);
                             var state = new State(source, destination.MainSocket);
                             destination.Connect(new IPEndPoint(IPAddress.Parse("127.0.0.1"), toPort), source);
+                            #if DNX451
                             source.BeginReceive(state.Buffer, 0, state.Buffer.Length, 0, OnDataReceive, state);
+                            #endif
                         }
                     }
                     catch
@@ -69,7 +71,9 @@ namespace Orient.Tests
         {
             var state = new State(MainSocket, destination);
             MainSocket.Connect(remoteEndpoint);
+#if DNX451
             MainSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, SocketFlags.None, OnDataReceive, state);
+#endif
         }
 
         private static void OnDataReceive(IAsyncResult result)
@@ -77,12 +81,18 @@ namespace Orient.Tests
             var state = (State)result.AsyncState;
             try
             {
+#if DNX451
                 var bytesRead = state.SourceSocket.EndReceive(result);
                 if (bytesRead > 0)
                 {
                     state.DestinationSocket.Send(state.Buffer, bytesRead, SocketFlags.None);
                     state.SourceSocket.BeginReceive(state.Buffer, 0, state.Buffer.Length, 0, OnDataReceive, state);
                 }
+#elif DNXCORE50
+
+#else
+#error No implementation for the target DNX
+#endif
             }
             catch
             {
