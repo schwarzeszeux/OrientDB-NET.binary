@@ -113,13 +113,6 @@ namespace Orient.Client.API
         {
             if (document.HasField(field))
             {
-<<<<<<< .merge_file_a11864
-                document.GetField<HashSet<ORID>>(field).Add(orid);
-            }
-            else
-            {
-                var orids = new HashSet<ORID>();
-=======
                 var oridCollection = document[field] as ICollection<ORID>;
                 if (oridCollection != null)
                 {
@@ -133,7 +126,6 @@ namespace Orient.Client.API
             else
             {
                 var orids = new HashSet<object>();
->>>>>>> .merge_file_a13308
                 orids.Add(orid);
                 document.SetField(field, orids);
             }
@@ -191,10 +183,6 @@ namespace Orient.Client.API
 
         public void Delete<T>(T typedObject) where T : IBaseRecord
         {
-<<<<<<< .merge_file_a11864
-            var record = new TypedTransactionRecord<T>(RecordType.Delete, typedObject);
-            Insert(record);
-=======
             var edge = typedObject as OEdge;
 
             if (edge != null)
@@ -205,7 +193,6 @@ namespace Orient.Client.API
             {
                 Insert(new TypedTransactionRecord<T>(RecordType.Delete, typedObject));
             }
->>>>>>> .merge_file_a13308
         }
 
         private void Insert(TransactionRecord record)

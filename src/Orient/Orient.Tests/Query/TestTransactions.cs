@@ -263,7 +263,7 @@ namespace Orient.Tests.Query
         /// <summary>
         /// Tests the DeleteEdge method of the OTransaction object.
         /// </summary>
-        [Test]
+        [Fact]
         public void DeleteEdgeTest()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -295,8 +295,8 @@ namespace Orient.Tests.Query
                     var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
                     var createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
                     var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
-                    Assert.That(createdEdge.OutV, Is.EqualTo(createdVertex1.ORID));
-                    Assert.That(createdEdge.InV, Is.EqualTo(createdVertex2.ORID));
+                    Assert.Equal(createdEdge.OutV, createdVertex1.ORID);
+                    Assert.Equal(createdEdge.InV, createdVertex2.ORID);
                 }
 
                 // Act
@@ -317,9 +317,9 @@ namespace Orient.Tests.Query
 
                     var deletedEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().FirstOrDefault();
 
-                    Assert.IsNull(deletedEdge);
-                    Assert.That(vOut.GetField<HashSet<object>>("out_TestEdgeClass").Count, Is.EqualTo(0));
-                    Assert.That(vIn.GetField<HashSet<object>>("in_TestEdgeClass").Count, Is.EqualTo(0));
+                    Assert.Null(deletedEdge);
+                    Assert.Equal(vOut.GetField<HashSet<object>>("out_TestEdgeClass").Count, 0);
+                    Assert.Equal(vIn.GetField<HashSet<object>>("in_TestEdgeClass").Count, 0);
                 }
             }
         }
@@ -327,7 +327,7 @@ namespace Orient.Tests.Query
         /// <summary>
         /// Tests that calling delete on an edge updates the in_ and out_ properties of the end verticles (inV and outV) references too.
         /// </summary>
-        [Test]
+        [Fact]
         public void TestThatCallingDeleteOnAnEdgeUpdatesTheInAndOutReferencesToo()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -359,8 +359,8 @@ namespace Orient.Tests.Query
                     var createdVertex1 = database.Select().From("V").Where("bar").Equals(1).ToList<OVertex>().First();
                     var createdVertex2 = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
                     var createdEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().First();
-                    Assert.That(createdEdge.OutV, Is.EqualTo(createdVertex1.ORID));
-                    Assert.That(createdEdge.InV, Is.EqualTo(createdVertex2.ORID));
+                    Assert.Equal(createdEdge.OutV, createdVertex1.ORID);
+                    Assert.Equal(createdEdge.InV, createdVertex2.ORID);
                 }
 
                 // Act
@@ -381,9 +381,9 @@ namespace Orient.Tests.Query
 
                     var deletedEdge = database.Select().From("E").Where("item").Equals(1).ToList<OEdge>().FirstOrDefault();
 
-                    Assert.IsNull(deletedEdge);
-                    Assert.That(vOut.GetField<HashSet<object>>("out_TestEdgeClass").Count, Is.EqualTo(0));
-                    Assert.That(vIn.GetField<HashSet<object>>("in_TestEdgeClass").Count, Is.EqualTo(0));
+                    Assert.Null(deletedEdge);
+                    Assert.Equal(vOut.GetField<HashSet<object>>("out_TestEdgeClass").Count, 0);
+                    Assert.Equal(vIn.GetField<HashSet<object>>("in_TestEdgeClass").Count, 0);
                 }
             }
         }
@@ -392,7 +392,7 @@ namespace Orient.Tests.Query
         /// Tests that the edge rids are added to the Verticles edge lists (in_... and out_ ... fields)
         /// when the edge list is not empty on the verticle.
         /// </summary>
-        [Test]
+        [Fact]
         public void TestAddEdgeToVerticlaWhichAlreadyHasEdges()
         {
             using (TestDatabaseContext testContext = new TestDatabaseContext())
@@ -418,8 +418,8 @@ namespace Orient.Tests.Query
                     database.Transaction.Add(toV);
                     database.Transaction.AddEdge(firstEdge, fromV, toV);
 
-                    Assert.AreEqual(fromV.ORID, firstEdge.OutV);
-                    Assert.AreEqual(toV.ORID, firstEdge.InV);
+                    Assert.Equal(fromV.ORID, firstEdge.OutV);
+                    Assert.Equal(toV.ORID, firstEdge.InV);
 
                     database.Transaction.Commit();
                 }
@@ -440,10 +440,10 @@ namespace Orient.Tests.Query
                     var toV = database.Select().From("V").Where("bar").Equals(2).ToList<OVertex>().First();
                     var secondEdge = database.Select().From("E").Where("item").Equals(2).ToList<OEdge>().First();
 
-                    Assert.That(secondEdge.OutV, Is.EqualTo(fromV.ORID));
-                    Assert.That(secondEdge.InV, Is.EqualTo(toV.ORID));
-                    Assert.That(fromV.GetField<HashSet<object>>("out_TestEdgeClass").Count, Is.EqualTo(2));
-                    Assert.That(toV.GetField<HashSet<object>>("in_TestEdgeClass").Count, Is.EqualTo(2));
+                    Assert.Equal(secondEdge.OutV, fromV.ORID);
+                    Assert.Equal(secondEdge.InV, toV.ORID);
+                    Assert.Equal(fromV.GetField<HashSet<object>>("out_TestEdgeClass").Count, 2);
+                    Assert.Equal(toV.GetField<HashSet<object>>("in_TestEdgeClass").Count, 2);
                 }
             }
         }

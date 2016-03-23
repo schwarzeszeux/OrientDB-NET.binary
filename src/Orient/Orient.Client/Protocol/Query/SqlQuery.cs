@@ -3,11 +3,10 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Orient.Client.Protocol
 {
-    using System.Text.RegularExpressions;
-
     internal class SqlQuery
     {
         private QueryCompiler _compiler = new QueryCompiler();

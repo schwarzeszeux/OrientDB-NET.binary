@@ -265,8 +265,14 @@ namespace Orient.Client.Protocol
             // initiate socket connection
             try
             {
+#if DNX451
                 _socket = new TcpClient(Hostname, Port);
                 _socket.ReceiveTimeout = Configuration.Timeout;
+#else
+                _socket = new TcpClient();
+                _socket.ReceiveTimeout = Configuration.Timeout;
+                _socket.ConnectAsync(Hostname, Port).RunSynchronously();
+#endif
             }
             catch (SocketException ex)
             {
@@ -299,8 +305,14 @@ namespace Orient.Client.Protocol
             // initiate socket connection
             try
             {
+#if DNX451
                 _socket = new TcpClient(Hostname, Port);
                 _socket.ReceiveTimeout = Configuration.Timeout;
+#else
+                _socket = new TcpClient();
+                _socket.ReceiveTimeout = Configuration.Timeout;
+                _socket.ConnectAsync(Hostname, Port).RunSynchronously();
+#endif
             }
             catch (SocketException ex)
             {
@@ -342,6 +354,6 @@ namespace Orient.Client.Protocol
             }
         }
 
-        #endregion
+#endregion
     }
 }
