@@ -2,6 +2,7 @@
 using System.Globalization;
 using Xunit;
 using Orient.Client;
+using System.Threading;
 
 namespace Orient.Tests.Issues
 {
@@ -29,9 +30,17 @@ namespace Orient.Tests.Issues
         public void TestGermanFloatCulture()
         {
             var floatValue = "108,4";
-
             float @float;
+#if DNX451
             float.TryParse(floatValue, NumberStyles.Any, CultureInfo.GetCultureInfo("de-DE"), out @float);
+#elif DNXCORE50
+            CultureInfo germanCulture = new CultureInfo("de-DE");
+            float.TryParse(floatValue, NumberStyles.Any, germanCulture, out @float);
+#else
+            float = 0f;
+#error No implementation for the target DNX
+#endif
+
 
             var doc = new ODocument { OClassName = "TestVertex" }
                 .SetField("floatField", @float);

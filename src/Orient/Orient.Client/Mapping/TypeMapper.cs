@@ -108,7 +108,8 @@ namespace Orient.Client.Mapping
                 else if (propertyInfo.PropertyType.GetTypeInfo().IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() != typeof(Nullable<>))
                 {
                     if (propertyInfo.PropertyType.Name.StartsWith("List")
-                        || propertyInfo.PropertyType.Name.StartsWith("IList"))
+                        || propertyInfo.PropertyType.Name.StartsWith("IList")
+                        || propertyInfo.PropertyType.Name.StartsWith("IEnumerable"))
                         _fields.Add(new ListNamedFieldMapping<T>(propertyInfo, fieldPath));
                     else if (propertyInfo.PropertyType.Name.StartsWith("HashSet"))
                         _fields.Add(new HashSetNamedFieldMapping<T>(propertyInfo, fieldPath));

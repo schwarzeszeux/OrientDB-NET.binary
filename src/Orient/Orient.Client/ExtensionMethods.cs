@@ -14,7 +14,7 @@ namespace Orient.Client
             return property.GetCustomAttributes(typeof(OProperty), true).OfType<OProperty>().FirstOrDefault();
         }
 
-        public static string ToInvarianCultureString(this object value)
+        public static string ToInvariantCultureString(this object value)
         {
             var formattable = value as IFormattable;
             if (value is float)

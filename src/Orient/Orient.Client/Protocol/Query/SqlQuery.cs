@@ -626,22 +626,22 @@ namespace Orient.Client.Protocol
             }
             else if (value is Guid || value is Enum)
             {
-                sql = string.Join(" ", "'" + value.ToInvarianCultureString() + "'");
+                sql = string.Join(" ", "'" + value.ToInvariantCultureString() + "'");
             }
             else if (value is Decimal)
             {
-                sql = string.Join(" ", value.ToInvarianCultureString() + "d");
+                sql = string.Join(" ", value.ToInvariantCultureString() + "d");
                 // Experimental function https://github.com/orientechnologies/orientdb/issues/3483
                 // sql = string.Join(" ", "decimal(", value.ToInvarianCultureString(), ")");
                 // Bug in orientdb #3483 after that use suffix + "c");
             }
             else if (value is float)
             {
-                sql = string.Join(" ", value.ToInvarianCultureString() + "f");
+                sql = string.Join(" ", value.ToInvariantCultureString() + "f");
             }
             else if (value is double)
             {
-                sql = string.Join(" ", value.ToInvarianCultureString() + "d");
+                sql = string.Join(" ", value.ToInvariantCultureString() + "d");
             }
             else if (value == null)
             {
@@ -649,7 +649,7 @@ namespace Orient.Client.Protocol
             }
             else
             {
-                sql = string.Join(" ", value.ToInvarianCultureString());
+                sql = string.Join(" ", value.ToInvariantCultureString());
             }
 
             return sql;

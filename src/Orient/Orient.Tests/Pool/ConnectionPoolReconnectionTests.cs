@@ -19,7 +19,7 @@ namespace Orient.Tests.Pool
             }
         }
 
-        [Fact]
+        [Fact(Skip ="This test needs to be reworked.")]
         public void ShouldReconnectIfTcpProxyIsRestored()
         {
             using (var tcpProxy = new TcpProxy(12424))
