@@ -96,6 +96,7 @@
     <Compile Include="API\Query\OSqlUpdate.cs" />
     <Compile Include="API\Types\ORidBag.cs" />
     <Compile Include="API\Types\TypeConverter.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Mapping\AllFieldMapping.cs" />
     <Compile Include="Mapping\BasicFieldMapping.cs" />
@@ -182,7 +183,9 @@
     <Compile Include="Transactions\ORIDSimplePropertyUpdater.cs" />
     <Compile Include="Transactions\ORIDUpdater.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

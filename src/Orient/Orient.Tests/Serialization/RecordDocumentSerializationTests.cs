@@ -129,7 +129,7 @@ namespace Orient.Tests.Serialization
         [Fact]
         public void TestSerializeSubObject()
         {
-            string recordString = "TestHasAThing@TheThing:(Value:17,Text:\"blah\")";
+            string recordString = "TestHasAThing@TheThing:(Thing@Value:17,Text:\"blah\")";
 
             var rawRecord = Encoding.UTF8.GetBytes(recordString);
             ODocument document = serializer.Deserialize(rawRecord, new ODocument());
@@ -157,7 +157,7 @@ namespace Orient.Tests.Serialization
         [Fact]
         public void TestSerializeSubObjectArray()
         {
-            string recordString = "TestHasThings@TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasThings@TheThings:[(Thing@Value:17,Text:\"blah\"),(Thing@Value:18,Text:\"foo\")]";
 
             var rawRecord = Encoding.UTF8.GetBytes(recordString);
             ODocument document = serializer.Deserialize(rawRecord, new ODocument());
@@ -180,7 +180,7 @@ namespace Orient.Tests.Serialization
         [Fact]
         public void TestSerializeSingleSubObjectArray()
         {
-            string recordString = "TestHasThings@TheThings:[(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasThings@TheThings:[(Thing@Value:18,Text:\"foo\")]";
 
             var rawRecord = Encoding.UTF8.GetBytes(recordString);
             ODocument document = serializer.Deserialize(rawRecord, new ODocument());
@@ -227,7 +227,7 @@ namespace Orient.Tests.Serialization
         [Fact]
         public void TestSerializeSubObjectList()
         {
-            string recordString = "TestHasListThings@TheThings:[(Value:17,Text:\"blah\"),(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasListThings@TheThings:[(Thing@Value:17,Text:\"blah\"),(Thing@Value:18,Text:\"foo\")]";
 
             var rawRecord = Encoding.UTF8.GetBytes(recordString);
             ODocument document = serializer.Deserialize(rawRecord, new ODocument());
@@ -249,7 +249,7 @@ namespace Orient.Tests.Serialization
         [Fact]
         public void TestSerializeSingleSubObjectList()
         {
-            string recordString = "TestHasListThings@TheThings:[(Value:18,Text:\"foo\")]";
+            string recordString = "TestHasListThings@TheThings:[(Thing@Value:18,Text:\"foo\")]";
 
             var rawRecord = Encoding.UTF8.GetBytes(recordString);
             ODocument document = serializer.Deserialize(rawRecord, new ODocument());

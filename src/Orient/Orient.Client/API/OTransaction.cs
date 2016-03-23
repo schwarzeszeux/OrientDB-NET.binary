@@ -113,13 +113,73 @@ namespace Orient.Client.API
         {
             if (document.HasField(field))
             {
+<<<<<<< .merge_file_a11864
                 document.GetField<HashSet<ORID>>(field).Add(orid);
             }
             else
             {
                 var orids = new HashSet<ORID>();
+=======
+                var oridCollection = document[field] as ICollection<ORID>;
+                if (oridCollection != null)
+                {
+                    oridCollection.Add(orid);
+                }
+                else
+                {
+                    ((ICollection<object>)document[field]).Add(orid);
+                }
+            }
+            else
+            {
+                var orids = new HashSet<object>();
+>>>>>>> .merge_file_a13308
                 orids.Add(orid);
                 document.SetField(field, orids);
+            }
+        }
+
+        public void DeleteEdge(OEdge edge)
+        {
+            var inV = this.getDocumentByOrid(edge.InV);
+            var outV = this.getDocumentByOrid(edge.OutV);
+
+            this.removeFromOridField(inV, "in_" + edge.OClassName, edge.ORID);
+            this.removeFromOridField(outV, "out_" + edge.OClassName, edge.ORID);
+
+            if (!_records.ContainsKey(inV.ORID))
+            {
+                Update(inV);
+            }
+
+            if (!_records.ContainsKey(outV.ORID))
+            {
+                Update(outV);
+            }
+
+            Insert(new TypedTransactionRecord<OEdge>(RecordType.Delete, edge));
+        }
+
+        private ODocument getDocumentByOrid(ORID orid)
+        {
+            return _records.ContainsKey(orid)
+                ? this._records.Single(x => x.Key == orid).Value.Document
+                : this._connection.Database.Select().From(orid).ToList<ODocument>().First();
+        }
+
+        private void removeFromOridField(ODocument document, string field, ORID orid)
+        {
+            if (document.HasField(field))
+            {
+                var oridCollection = document[field] as ICollection<ORID>;
+                if (oridCollection != null)
+                {
+                    oridCollection.Remove(orid);
+                }
+                else
+                {
+                    ((ICollection<object>)document[field]).Remove(orid);
+                }
             }
         }
 
@@ -131,8 +191,21 @@ namespace Orient.Client.API
 
         public void Delete<T>(T typedObject) where T : IBaseRecord
         {
+<<<<<<< .merge_file_a11864
             var record = new TypedTransactionRecord<T>(RecordType.Delete, typedObject);
             Insert(record);
+=======
+            var edge = typedObject as OEdge;
+
+            if (edge != null)
+            {
+                this.DeleteEdge(edge);
+            }
+            else
+            {
+                Insert(new TypedTransactionRecord<T>(RecordType.Delete, typedObject));
+            }
+>>>>>>> .merge_file_a13308
         }
 
         private void Insert(TransactionRecord record)
